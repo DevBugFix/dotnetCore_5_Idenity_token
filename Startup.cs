@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using Claim.Data;
@@ -66,7 +68,7 @@ namespace dotnetClaimAuthorization
 
 
             });
-
+       
             //    services.AddAuthorization(option=>{
             //        option.AddPolicy("AdminPolicy",policy=>{policy.RequireRole("Admin","User")});
             //    });
@@ -85,8 +87,34 @@ namespace dotnetClaimAuthorization
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "dotnetClaimAuthorization", Version = "v1" });
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = ".NET Core 5 ", Version = "v1",Description="This test description" });
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    In = ParameterLocation.Header,
+                    Description = "Please insert token",
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.Http,
+                    BearerFormat = "JWT",
+                    Scheme = "bearer"
+                });
+              c.AddSecurityRequirement(new OpenApiSecurityRequirement{
+                     {
+                         new OpenApiSecurityScheme{
+                             Reference=new OpenApiReference  {
+                                    Type=ReferenceType.SecurityScheme,
+                                    Id="Bearer"
+                             }
+                         },
+                         new string[]{}
+
+                     }
+
+              });
+             var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+        var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+        c.IncludeXmlComments(xmlPath);
             });
+    
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -98,7 +126,11 @@ namespace dotnetClaimAuthorization
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "dotnetClaimAuthorization v1"));
             }
-
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "MY API");
+            });
             app.UseHttpsRedirection();
             app.UseCors(_loginOrigin);
             app.UseRouting();

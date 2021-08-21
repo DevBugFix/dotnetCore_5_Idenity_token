@@ -80,7 +80,10 @@ namespace dotnetClaimAuthorization.Controllers
                 return await Task.FromResult(new ResponseModel(ResponseCode.Error, ex.Message, null));
             }
         }
-
+    
+   ///<summary>
+   ///Get All User from database   
+   ///</summary>
         [Authorize(Roles = "Admin")]
         [HttpGet("GetAllUser")]
         public async Task<object> GetAllUser()
@@ -126,6 +129,13 @@ namespace dotnetClaimAuthorization.Controllers
                 return await Task.FromResult(new ResponseModel(ResponseCode.Error, ex.Message, null));
             }
         }
+
+
+           ///<summary>
+   ///To login into App  
+   ///</summary>
+   ///<param name="model"></param>
+   //
         [AllowAnonymous]
         [HttpPost("Login")]
         public async Task<object> Login([FromBody] LoginBindingModel model)
